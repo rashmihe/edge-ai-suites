@@ -1,0 +1,23 @@
+dbrp "datain"."autogen"
+
+var data0 = stream
+        |from()
+                .database('datain')
+                .retentionPolicy('autogen')
+                .measurement('fetal-health-data')
+        @fetal_health_predictor()
+data0
+        |influxDBOut()
+                .buffer(0)
+                .database('datain')
+                .measurement('fetal-health-prediction-data')
+                .retentionPolicy('autogen')
+data0
+        |alert()
+                .crit(lambda: "alert_status" >= 0.8)
+                .warn(lambda: "alert_status" >= 0.5 AND "alert_status" < 0.8)
+                .message('{"time": "{{ index .Time }}", "baseline_value": {{ index .Fields "baseline value" }}, "fetal_health_label": "{{ index .Fields "fetal_health_label" }}", "confidence": {{ index .Fields "confidence" }}, "alert_status": {{ index .Fields "alert_status" }}, "alert_message": "{{ index .Fields "alert_message" }}" } ')
+                .noRecoveries()
+                .mqtt('my_mqtt_broker')
+                .topic('alerts/fetal_health')
+                .qos(1)

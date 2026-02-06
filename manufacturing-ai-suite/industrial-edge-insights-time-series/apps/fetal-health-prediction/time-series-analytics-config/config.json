@@ -1,0 +1,14 @@
+{
+    "udfs": {
+        "name": "fetal_health_predictor",
+        "models": "fetal_health_predictor.pkl",
+        "device": "cpu"
+    },
+    "alerts": {
+        "mqtt": {
+            "mqtt_broker_host": "ia-mqtt-broker",
+            "mqtt_broker_port": 1883,
+            "name": "my_mqtt_broker"
+        }
+    }
+}
